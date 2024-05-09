@@ -3,6 +3,7 @@ from .models import Cliente
 from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from oauth2_provider.models import AccessToken
 
 # Create your views here.
 
@@ -17,3 +18,13 @@ def listar_servicios(request):
     servicios = Servicio.objects.all()
     serializer = ServicioSerializer(servicios, many=True)
     return Response(serializer.data)
+
+@api_view(["GET"])
+def obtener_usuario_token(request, token):
+    try:
+        access_token_obj = AccessToken.objects.get(token=token)
+        user = access_token_obj.user
+        serializer = UsuarioSerializer(user)
+        return Response(serializer.data)
+    except AccessToken.DoesNotExist:
+        return None
