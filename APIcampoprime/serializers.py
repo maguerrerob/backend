@@ -27,7 +27,7 @@ class UsuarioSerializerRegistro(serializers.Serializer):
     def validate_username(self, username):
         usuario = Usuario.objects.filter(username=username).first()
         if (not usuario is None):
-            raise serializers.ValidationError("Ya existe un usuario con eso nombre")
+            raise serializers.ValidationError("Ya existe un usuario con ese nombre")
         return username
     
     def validate_password1(self, password1):
