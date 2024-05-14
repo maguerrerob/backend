@@ -55,7 +55,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
+    #Despliegue
+    "https://main--ornate-griffin-0a1c4a.netlify.app"
+    #Producción
+    # "http://localhost:4200",
 ]
 
 ROOT_URLCONF = 'mysite.urls'
