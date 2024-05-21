@@ -6,9 +6,10 @@ from .models import *
 misModelos = [
     Cliente,
     Servicio,
-    RecintoServicio,
+    Pista,
     Duenyo_recinto,
-    Recinto
+    Recinto,
+    Reserva,
 ]
 
 admin.site.register(misModelos)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 # Create your models here.
 
@@ -35,30 +36,46 @@ class Duenyo_recinto(models.Model):
         return self.usuario.username
 
 class Recinto(models.Model):
-    id_duenyo_recinto = models.ForeignKey(Duenyo_recinto, on_delete=models.CASCADE)
+    duenyo_recinto = models.ForeignKey(Duenyo_recinto, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50)
     descripcion = models.TextField()
     ciudad = models.CharField(max_length=50)
     municipio = models.CharField(max_length=50)
     precio_por_hora = models.IntegerField()
+    imagen = models.ImageField(upload_to='recintos', blank=True, null=True)
+    hora_inicio = models.FloatField()
+    hora_fin = models.FloatField()
 
     def __str__(self) -> str:
         return self.nombre
+    
+class Pista(models.Model):
+    recinto = models.ForeignKey(Recinto, verbose_name=("Recinto"), on_delete=models.CASCADE)
+    ESTADOS = [
+        ("B", "Bueno"),
+        ("M", "Mal"),
+        ("R", "Regular")
+    ]
+    estado_porterias = models.CharField(max_length=1, choices=ESTADOS)
+    n_pista = models.IntegerField()
+    CAMPOS = [
+        ("SA", "Sala"),
+        ("SI", "Siete"),
+        ("ON", "Once")
+    ]
+    tipo_campo = models.CharField(max_length=2, choices=CAMPOS)
+
+class Reserva(models.Model):
+    cliente = models.ForeignKey(Cliente, verbose_name=("Cliente"), on_delete=models.CASCADE)
+    pista = models.ForeignKey(Pista, verbose_name=("Pista"), on_delete=models.CASCADE)
+    hora_inicio = models.FloatField()
+    hora_fin = models.FloatField()
+    dia = models.DateField(default=timezone.now)
 
 class Servicio(models.Model):
-    servicio_ofrecido = models.ManyToManyField(Recinto, through="RecintoServicio")
+    recinto = models.ForeignKey(Recinto, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50)
     observaciones = models.TextField()
 
     def __str__(self) -> str:
         return self.nombre
-
-class RecintoServicio(models.Model):
-    recinto = models.ForeignKey(Recinto, on_delete=models.CASCADE)
-    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return self.id
-
-    class Meta:
-        unique_together = ('recinto', 'servicio')  # Asegura que no haya duplicados para que un Servicio no pueda ser servido más de una vez en el Recinto
