@@ -51,6 +51,8 @@ class registrar_usuario(generics.CreateAPIView):
                     username = serializers.data.get('username'),
                     email = serializers.data.get('email'),
                     password = serializers.data.get('password1'),
+                    first_name = serializers.data.get('first_name'),
+                    last_name = serializers.data.get('last_name'),
                     rol = rol
                 )
                 if (rol == str(Usuario.CLIENTE)):

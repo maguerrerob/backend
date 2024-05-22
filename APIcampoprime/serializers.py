@@ -21,6 +21,8 @@ class UsuarioSerializerRegistro(serializers.Serializer):
     password1 = serializers.CharField()
     password2 = serializers.CharField()
     email = serializers.EmailField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
     telefono = serializers.CharField(max_length=9)
     rol = serializers.IntegerField()
 
