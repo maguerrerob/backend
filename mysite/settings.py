@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'APIcampoprime',
     'corsheaders',
-     'oauth2_provider',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [

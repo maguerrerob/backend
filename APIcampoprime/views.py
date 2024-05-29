@@ -44,6 +44,7 @@ class registrar_usuario(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializers = UsuarioSerializerRegistro(data=request.data)
+        print(request.data)
         if serializers.is_valid():
             try:
                 rol = request.data.get('rol')
@@ -56,12 +57,16 @@ class registrar_usuario(generics.CreateAPIView):
                     rol = rol
                 )
                 if (rol == str(Usuario.CLIENTE)):
+                    if not Group.objects.filter(name='cliente').exists():
+                        Group.objects.create(name='cliente')
                     grupo = Group.objects.get(name='cliente')
                     grupo.user_set.add(user)
                     telefono = serializers.validated_data.get('telefono')
                     cliente = Cliente.objects.create(usuario=user, telefono=telefono)
                     cliente.save()
                 elif (rol == str(Usuario.DUENYO_RECINTO)):
+                    if not Group.objects.filter(name='duenyo_recinto').exists():
+                        Group.objects.create(name='duenyo_recinto')
                     grupo = Group.objects.get(name='duenyo_recinto')
                     grupo.user_set.add(user)
                     telefono = serializers.validated_data.get('telefono')
