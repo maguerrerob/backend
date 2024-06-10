@@ -79,3 +79,25 @@ class registrar_usuario(generics.CreateAPIView):
                 return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+@api_view(["GET"])
+def recintos_by_duenyo(request, duenyo_id):
+    existe = Recinto.objects.filter(duenyo_recinto=duenyo_id).exists()
+    return Response(existe)
+
+@api_view(["POST"])
+def recinto_create(request):
+    print(type(request.data))
+    if (request.user.has_perm("APIcampoprime.add_recinto")):
+        serializer = RecintoSerializerCreate(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response("Recinto creado con exito")
+            except Exception as error:
+                print(error)
+                return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
