@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import Group
 # Para indicar errores (500, 400, 401, etc)
 from rest_framework import status
+from rest_framework.views import APIView
 
 
 # Create your views here.
@@ -85,9 +86,9 @@ def recintos_by_duenyo(request, duenyo_id):
     existe = Recinto.objects.filter(duenyo_recinto=duenyo_id).exists()
     return Response(existe)
 
-@api_view(["POST"])
+@api_view(['POST'])
 def recinto_create(request):
-    print(type(request.data))
+    print(request.data)
     if (request.user.has_perm("APIcampoprime.add_recinto")):
         serializer = RecintoSerializerCreate(data=request.data)
         if serializer.is_valid():

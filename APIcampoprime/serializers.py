@@ -68,7 +68,7 @@ class RecintoSerializerCreate(serializers.Serializer):
         return descripcion
 
     def validate_precio_por_hora(self, precio_por_hora):
-        if precio_por_hora < 1:
+        if precio_por_hora < 6:
             raise serializers.ValidationError("Error, el precio no puede ser menor de 1")
         return precio_por_hora
     
