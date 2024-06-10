@@ -51,27 +51,23 @@ class DuenyoRecintoSerializer(serializers.ModelSerializer):
         model = Duenyo_recinto
         fields = "__all__"
 
-class RecintoSerializerCreate(serializers.Serializer):
+class RecintoSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Recinto
         fields = "__all__"
 
-    def validate_nombre(self, nombre):
-        QSnombre = Recinto.objects.filter(nombre=nombre).first()
-        if (QSnombre is not None):
-            raise serializers.ValidationError("Error, ese nombre de recinto ya existe")
-        return nombre
+    # def validate_nombre(self, nombre):
+    #     QSnombre = Recinto.objects.filter(nombre=nombre).first()
+    #     if (QSnombre is not None):
+    #         raise serializers.ValidationError("Error, ese nombre de recinto ya existe")
+    #     return nombre
 
     def validate_descripcion(self, descripcion):
         if len(descripcion) > 500:
             raise serializers.ValidationError("Error, no puede tener una descripción tan larga")
         return descripcion
 
-    def validate_precio_por_hora(self, precio_por_hora):
-        if precio_por_hora < 6:
-            raise serializers.ValidationError("Error, el precio no puede ser menor de 1")
-        return precio_por_hora
-    
-    def create(self, validated_data):
-        recinto = Recinto.objects.create(**validated_data)
-        return recinto
+    # def validate_precio_por_hora(self, precio_por_hora):
+    #     if precio_por_hora < 6:
+    #         raise serializers.ValidationError("Error, el precio no puede ser menor de 1")
+    #     return precio_por_hora

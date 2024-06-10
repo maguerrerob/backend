@@ -41,7 +41,7 @@ class Recinto(models.Model):
     descripcion = models.TextField()
     ciudad = models.CharField(max_length=50)
     precio_por_hora = models.FloatField()
-    imagen = models.ImageField(upload_to='recintos', blank=True, null=True, default=None)
+    # imagen = models.ImageField(upload_to='recintos', blank=True, null=True, default=None)
     hora_inicio = models.FloatField()
     hora_fin = models.FloatField()
 
