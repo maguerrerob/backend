@@ -54,7 +54,10 @@ class DuenyoRecintoSerializer(serializers.ModelSerializer):
 class RecintoSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Recinto
-        fields = "__all__"
+        fields = ["duenyo_recinto_id","descripcion", "nombre",
+            "ciudad", "precio_por_hora",
+            "hora_inicio", "hora_fin"
+        ]
 
     # def validate_nombre(self, nombre):
     #     QSnombre = Recinto.objects.filter(nombre=nombre).first()

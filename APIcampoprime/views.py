@@ -89,16 +89,16 @@ def recintos_by_duenyo(request, duenyo_id):
 @api_view(['POST'])
 def recinto_create(request):
     print(request.data)
-    if (request.user.has_perm("APIcampoprime.add_recinto")):
-        serializer = RecintoSerializerCreate(data=request.data)
-        if serializer.is_valid():
-            try:
-                serializer.save()
-                return Response("Recinto creado con exito")
-            except Exception as error:
-                print(error)
-                return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
+    serializer = RecintoSerializerCreate(data=request.data)
+    if serializer.is_valid():
+        try:
+            serializer.save()
+            return Response("Recinto creado con exito")
+        except serializers.ValidationError as error:
+            print(repr(error))
             return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
+        except Exception as error:
+            print(repr(error))
+            return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
