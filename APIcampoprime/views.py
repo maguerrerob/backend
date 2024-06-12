@@ -79,6 +79,7 @@ class registrar_usuario(generics.CreateAPIView):
                 print(repr(error))
                 return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
+            print(repr(serializers.errors))
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
         
 @api_view(["GET"])

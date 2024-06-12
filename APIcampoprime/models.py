@@ -56,13 +56,18 @@ class Pista(models.Model):
         ("R", "Regular")
     ]
     estado_porterias = models.CharField(max_length=1, choices=ESTADOS)
-    n_pista = models.IntegerField()
+    # n_pista = models.IntegerField()
     CAMPOS = [
         ("SA", "Sala"),
         ("SI", "Siete"),
         ("ON", "Once")
     ]
     tipo_campo = models.CharField(max_length=2, choices=CAMPOS)
+    TERRENOS = [
+        ("CE", "Cesped"),
+        ("AL", "Albero")
+    ]
+    tipo_terrerno = models.CharField(max_length=2, choices=TERRENOS)
 
 class Reserva(models.Model):
     cliente = models.ForeignKey(Cliente, verbose_name=("Cliente"), on_delete=models.CASCADE)
