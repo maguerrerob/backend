@@ -48,30 +48,30 @@ class Recinto(models.Model):
     def __str__(self) -> str:
         return self.nombre
     
-class Pista(models.Model):
-    recinto = models.ForeignKey(Recinto, verbose_name=("Recinto"), on_delete=models.CASCADE)
-    ESTADOS = [
-        ("B", "Bueno"),
-        ("M", "Mal"),
-        ("R", "Regular")
-    ]
-    estado_porterias = models.CharField(max_length=1, choices=ESTADOS)
-    # n_pista = models.IntegerField()
-    CAMPOS = [
-        ("SA", "Sala"),
-        ("SI", "Siete"),
-        ("ON", "Once")
-    ]
-    tipo_campo = models.CharField(max_length=2, choices=CAMPOS)
-    TERRENOS = [
-        ("CE", "Cesped"),
-        ("AL", "Albero")
-    ]
-    tipo_terrerno = models.CharField(max_length=2, choices=TERRENOS)
+# class Pista(models.Model):
+#     recinto = models.ForeignKey(Recinto, verbose_name=("Recinto"), on_delete=models.CASCADE)
+#     ESTADOS = [
+#         ("B", "Bueno"),
+#         ("M", "Mal"),
+#         ("R", "Regular")
+#     ]
+#     estado_porterias = models.CharField(max_length=1, choices=ESTADOS)
+#     # n_pista = models.IntegerField()
+#     CAMPOS = [
+#         ("SA", "Sala"),
+#         ("SI", "Siete"),
+#         ("ON", "Once")
+#     ]
+#     tipo_campo = models.CharField(max_length=2, choices=CAMPOS)
+#     TERRENOS = [
+#         ("CE", "Cesped"),
+#         ("AL", "Albero")
+#     ]
+#     tipo_terrerno = models.CharField(max_length=2, choices=TERRENOS)
 
 class Reserva(models.Model):
     cliente = models.ForeignKey(Cliente, verbose_name=("Cliente"), on_delete=models.CASCADE)
-    pista = models.ForeignKey(Pista, verbose_name=("Pista"), on_delete=models.CASCADE)
+    recinto = models.ForeignKey(Recinto, verbose_name=("Recinto"), on_delete=models.CASCADE, default=None)
     hora_inicio = models.FloatField()
     hora_fin = models.FloatField()
     dia = models.DateField(default=timezone.now)

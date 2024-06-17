@@ -7,5 +7,7 @@ urlpatterns = [
     path("usuario/token/<str:token>", obtener_usuario_token),
     path("registrar/usuario/", registrar_usuario.as_view()),
     path("duenyo_recintos/<int:duenyo_id>/recintos/", recintos_by_duenyo),
+    path("getDuenyorecintoId/<int:usuario_id>", get_duenyo_recinto_id),
     path("recinto/post/", recinto_create),
+    path("recinto/lista", listar_recintos),
 ]

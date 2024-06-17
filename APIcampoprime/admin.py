@@ -6,7 +6,7 @@ from .models import *
 misModelos = [
     Cliente,
     Servicio,
-    Pista,
+    # Pista,
     Duenyo_recinto,
     Recinto,
     Reserva,

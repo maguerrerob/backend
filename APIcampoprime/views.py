@@ -87,6 +87,27 @@ def recintos_by_duenyo(request, duenyo_id):
     existe = Recinto.objects.filter(duenyo_recinto=duenyo_id).exists()
     return Response(existe)
 
+@api_view(['GET'])
+def get_duenyo_recinto_id(request, usuario_id):
+    try:
+        # Obtener el objeto Usuario
+        usuario = Usuario.objects.get(id=usuario_id)
+        
+        # Obtener el objeto Duenyo_recinto correspondiente al usuario
+        duenyo_recinto = Duenyo_recinto.objects.get(usuario=usuario)
+        
+        # Devolver el ID de Duenyo_recinto
+        return Response({"duenyo_recinto_id": duenyo_recinto.id}, status=status.HTTP_200_OK)
+    
+    except Usuario.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Duenyo_recinto.DoesNotExist:
+        return Response({"error": "Duenyo_recinto no encontrado para el usuario dado"}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['POST'])
 def recinto_create(request):
     print(request.data)
@@ -103,3 +124,16 @@ def recinto_create(request):
             return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(['POST'])
+# def crear_reserva(request):
+#     print(request.data)
+#     serializer = ReservaSerializerCreate(data=request.data)
+#     if serializer.is_valid():
+
+
+@api_view(["GET"])
+def listar_recintos(request):
+    servicios = Recinto.objects.all()
+    serializer = RecintoSerializer(servicios, many=True)
+    return Response(serializer.data)

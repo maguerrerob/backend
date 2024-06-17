@@ -52,12 +52,18 @@ class DuenyoRecintoSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class RecintoSerializerCreate(serializers.ModelSerializer):
+    duenyo_recinto = serializers.PrimaryKeyRelatedField(queryset=Duenyo_recinto.objects.all())
     class Meta:
         model = Recinto
-        fields = ["duenyo_recinto_id","descripcion", "nombre",
+        fields = ["duenyo_recinto","descripcion", "nombre",
             "ciudad", "precio_por_hora",
             "hora_inicio", "hora_fin"
         ]
+    
+    def validate_descripcion(self, descripcion):
+        if len(descripcion) > 500:
+            raise serializers.ValidationError("Error, no puede tener una descripción tan larga")
+        return descripcion
 
     # def validate_nombre(self, nombre):
     #     QSnombre = Recinto.objects.filter(nombre=nombre).first()
@@ -65,12 +71,28 @@ class RecintoSerializerCreate(serializers.ModelSerializer):
     #         raise serializers.ValidationError("Error, ese nombre de recinto ya existe")
     #     return nombre
 
-    def validate_descripcion(self, descripcion):
-        if len(descripcion) > 500:
-            raise serializers.ValidationError("Error, no puede tener una descripción tan larga")
-        return descripcion
+    
 
     # def validate_precio_por_hora(self, precio_por_hora):
     #     if precio_por_hora < 6:
     #         raise serializers.ValidationError("Error, el precio no puede ser menor de 1")
     #     return precio_por_hora
+
+class ReservaSerializerCreate(serializers.ModelSerializer):
+    cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())
+    recinto = serializers.PrimaryKeyRelatedField(queryset=Recinto.objects.all())
+
+    class Meta:
+        model = Reserva
+        fields = [
+            'cliente', 'recinto',
+            'hora_inicio', 'hora_fin',
+            'dia'
+        ]
+
+    def validate_hora_inicio(self, hora_inicio):
+        data = self.get_initial()
+        hora_fin = data.get('hora_fin')
+        if hora_inicio > hora_fin:
+            raise serializers.ValidationError("Error, la hora de fin")
+        return hora_inicio
