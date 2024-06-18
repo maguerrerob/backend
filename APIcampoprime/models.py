@@ -76,6 +76,10 @@ class Reserva(models.Model):
     hora_fin = models.FloatField()
     dia = models.DateField(default=timezone.now)
 
+    def __str__(self) -> str:
+        return "Reserva del día: " + str(self.dia) + " a las: " + str(self.hora_inicio)
+    
+
 class Servicio(models.Model):
     recinto = models.ForeignKey(Recinto, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50)

@@ -39,10 +39,20 @@ class UsuarioSerializerRegistro(serializers.Serializer):
             raise serializers.ValidationError("Las contraseñas no coinciden")
         return password1
     
-class RecintoSerializer(serializers.Serializer):
+class RecintoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recinto
-        fields = "__all__"
+        fields = [
+            'id', 'nombre', 
+            'descripcion', 'ciudad', 
+            'precio_por_hora', 'hora_inicio', 
+            'hora_fin'
+        ]
+
+class ReservaSerializer(serializers.Serializer):
+    class Meta:
+        model = Reserva
+        fiels = "__all__"
 
 class DuenyoRecintoSerializer(serializers.ModelSerializer):
     recintos = RecintoSerializer(many=True, read_only=True)

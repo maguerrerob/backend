@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 from .models import Cliente
 from .serializers import *
@@ -114,8 +115,8 @@ def recinto_create(request):
     serializer = RecintoSerializerCreate(data=request.data)
     if serializer.is_valid():
         try:
-            serializer.save()
-            return Response("Recinto creado con exito")
+            recinto = serializer.save()
+            return Response({"message": "Recinto creado con exito", "id": recinto.id, "nombre": recinto.nombre}, status=status.HTTP_201_CREATED)
         except serializers.ValidationError as error:
             print(repr(error))
             return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
@@ -125,15 +126,81 @@ def recinto_create(request):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# @api_view(['POST'])
-# def crear_reserva(request):
-#     print(request.data)
-#     serializer = ReservaSerializerCreate(data=request.data)
-#     if serializer.is_valid():
+@api_view(['GET'])
+def getReservas(request, id_recinto):
+    try:
+        # Filtrar las reservas para el recinto dado
+        reservas = Reserva.objects.filter(recinto_id=id_recinto)
+        
+        # Si no hay reservas, lanzar una excepción personalizada
+        if not reservas.exists():
+            raise Reserva.DoesNotExist
+
+        # Convertir las reservas a una lista de diccionarios
+        lista_reservas = list(reservas.values('cliente__nombre', 'hora_inicio', 'hora_fin', 'dia'))
+        return Response({"Reservas": lista_reservas}, status=status.HTTP_200_OK)
+    
+    except Reserva.DoesNotExist:
+        return Response({"error": "No se encontraron reservas para el recinto especificado."}, status=status.HTTP_404_NOT_FOUND)
+    
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        return Response({"error": "Error interno del servidor."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def crear_reserva(request):
+    print(request.data)
+    serializer = ReservaSerializerCreate(data=request.data)
+    if serializer.is_valid():
+        try:
+            serializer.save()
+            return Response("Reserva creada")
+        except serializers.ValidationError as error:
+            print(repr(error))
+            return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
+        except Exception as error:
+            print(repr(error))
+            return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def obtener_recintos(request):
+    recintos = Recinto.objects.all()
+    serializer = RecintoSerializer(recintos, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
-def listar_recintos(request):
-    servicios = Recinto.objects.all()
-    serializer = RecintoSerializer(servicios, many=True)
-    return Response(serializer.data)
+def getHorarioRecinto(request, idRecinto):
+    try:
+        recinto = Recinto.objects.get(id=idRecinto)
+        return Response({"hora_inicio": recinto.hora_inicio, "hora_fin": recinto.hora_fin}, status=status.HTTP_200_OK)
+    
+    except Reserva.DoesNotExist:
+        return Response({"error": "Reserva no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        print(repr(e))
+        return Response({"error": "Error interno del servidor."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(["GET"])
+def obtener_reservas(request, recinto_id, dia):
+    try:
+        # Convertir el día de string a objeto date
+        dia = datetime.strptime(dia, '%Y-%m-%d').date()
+        reservas = Reserva.objects.filter(recinto_id=recinto_id, dia=dia)
+        
+        # Crear un diccionario para marcar las horas reservadas
+        horas_reservadas = {}
+        for reserva in reservas:
+            for hora in range(int(reserva.hora_inicio), int(reserva.hora_fin)):
+                horas_reservadas[hora] = True
+
+        return Response(horas_reservadas)
+    except Exception as e:
+        print(repr(e))
+        return Response({'error': str(e)}, status=500)
