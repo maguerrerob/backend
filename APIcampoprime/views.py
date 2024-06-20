@@ -14,6 +14,7 @@ from django.contrib.auth.models import Group
 # Para indicar errores (500, 400, 401, etc)
 from rest_framework import status
 from rest_framework.views import APIView
+from django.db.models import Q
 
 
 # Create your views here.
@@ -85,6 +86,7 @@ class registrar_usuario(generics.CreateAPIView):
         
 @api_view(["GET"])
 def recintos_by_duenyo(request, duenyo_id):
+    print(request.data)
     existe = Recinto.objects.filter(duenyo_recinto=duenyo_id).exists()
     return Response(existe)
 
@@ -116,7 +118,14 @@ def recinto_create(request):
     if serializer.is_valid():
         try:
             recinto = serializer.save()
-            return Response({"message": "Recinto creado con exito", "id": recinto.id, "nombre": recinto.nombre}, status=status.HTTP_201_CREATED)
+            return Response({"id": recinto.id,
+                                "nombre": recinto.nombre,
+                                "descripcion": recinto.descripcion,
+                                "ciudad": recinto.ciudad,
+                                "precio_por_hora": recinto.precio_por_hora,
+                                "hora_inicio": recinto.hora_inicio,
+                                "hora_fin": recinto.hora_fin,
+                            }, status=status.HTTP_201_CREATED)
         except serializers.ValidationError as error:
             print(repr(error))
             return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
@@ -148,24 +157,6 @@ def getReservas(request, id_recinto):
     
     except Exception as e:
         return Response({"error": "Error interno del servidor."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['POST'])
-def crear_reserva(request):
-    print(request.data)
-    serializer = ReservaSerializerCreate(data=request.data)
-    if serializer.is_valid():
-        try:
-            serializer.save()
-            return Response("Reserva creada")
-        except serializers.ValidationError as error:
-            print(repr(error))
-            return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
-        except Exception as error:
-            print(repr(error))
-            return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET'])
 def obtener_recintos(request):
@@ -204,3 +195,51 @@ def obtener_reservas(request, recinto_id, dia):
     except Exception as e:
         print(repr(e))
         return Response({'error': str(e)}, status=500)
+    
+@api_view(['GET'])
+def buscar_recintos(request):
+    query = request.query_params.get('query', '')
+
+    recintos = Recinto.objects.filter(
+        Q(nombre__icontains=query) | Q(ciudad__icontains=query)
+    )
+
+    serializer = RecintoSerializer(recintos, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def obtenerRecinto(request, idRecinto):
+    try:
+        recinto = Recinto.objects.get(id=idRecinto)
+    except Recinto.DoesNotExist:
+        return Response("Recinto no encontrado")
+    
+    serializer = RecintoSerializer(recinto)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def crear_reserva(request):
+    print(request.data)
+    serializer = ReservaSerializerCreate(data=request.data)
+    if serializer.is_valid():
+        try:
+            serializer.save()
+            return Response("Reserva creada")
+        except serializers.ValidationError as error:
+            print(repr(error))
+            return Response(str(error), status=status.HTTP_400_BAD_REQUEST)
+        except Exception as error:
+            print(repr(error))
+            return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def obtener_cliente(request, usuario_id):
+    try:
+        cliente = Cliente.objects.get(usuario=usuario_id)
+        serializer = ClienteSerializer(cliente)
+        return Response(serializer.data)
+    except Exception as error:
+        print(repr(error))
+        return Response(str(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

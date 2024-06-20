@@ -11,7 +11,10 @@ urlpatterns = [
     path("recinto/post/", recinto_create),
     path("recinto/lista", obtener_recintos),
     path("getReservas/recinto/<int:id_recinto/", getReservas),
-    path("crear_reserva", crear_reserva),
     path("horario/recinto/<int:idRecinto>", getHorarioRecinto),
-    path("reservas/<int:recinto_id>/<str:dia>/", obtener_reservas)
+    path("reservas/<int:recinto_id>/<str:dia>/", obtener_reservas),
+    path('recinto/buscar/', buscar_recintos),
+    path('obtener_recinto/<int:idRecinto>/', obtenerRecinto),
+    path("crear_reserva/", crear_reserva),
+    path("obtener/cliente/<int:usuario_id>", obtener_cliente)
 ]

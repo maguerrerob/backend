@@ -100,9 +100,9 @@ class ReservaSerializerCreate(serializers.ModelSerializer):
             'dia'
         ]
 
-    def validate_hora_inicio(self, hora_inicio):
-        data = self.get_initial()
-        hora_fin = data.get('hora_fin')
-        if hora_inicio > hora_fin:
-            raise serializers.ValidationError("Error, la hora de fin")
-        return hora_inicio
+    # def validate_hora_inicio(self, hora_inicio):
+    #     data = self.get_initial()
+    #     hora_fin = data.get('hora_fin')
+    #     if hora_inicio > hora_fin:
+    #         raise serializers.ValidationError("Error, la hora de fin")
+    #     return hora_inicio
